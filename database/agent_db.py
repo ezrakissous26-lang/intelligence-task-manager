@@ -9,34 +9,47 @@ class AgentDB:
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = ""
-        cur.execute(sql_command1)
+        sql_command = """INSERT INTO agents ('name', 'speciality', 'is_active', 'completed_missions', 'failed_missions', 'agent_rank')
+        VALUES (%s, %s, %s, %s, %s, %s)"""
+        values = data.values()
+
+        cur.execute(sql_command, values)
         conn.commit()
+
+        result = cur.lastrowid
 
         cur.close()
         conn.close()
+
+        return result
 
     def get_all_agents(self):
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = ""
+        sql_command1 = "SELECT * FROM agents"
         cur.execute(sql_command1)
-        conn.commit()
+
+        result = cur.fetchall()
 
         cur.close()
         conn.close()
+
+        return result
 
     def get_agent_by_id(self, id: int):
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = ""
-        cur.execute(sql_command1)
-        conn.commit()
+        sql_command1 = "SELECT * FROM agents WHERE id = %s"
+        cur.execute(sql_command1, (id,))
+
+        result = cur.fetchone()
 
         cur.close()
         conn.close()
+
+        return result
 
     def update_agent(self, id: int, data: dict):
         conn = my_conn_etablished
@@ -103,3 +116,23 @@ class AgentDB:
 
         cur.close()
         conn.close()
+
+
+        '''set_parts = [f"{key} = %s" for key in data.keys()]
+        set_clause = ", ".join(set_parts)
+
+        sql_command1 = f"UPDATE books SET {set_clause} WHERE id = %s"
+        values = list(data.values()) + [id]
+
+        cur.execute(sql_command1, values)'''
+
+my_data = {
+    "name": "Ezra",
+    "speciality": "dev",
+    "is_active": True,
+    "completed_missions": 5,
+    "failed_missions": 2,
+    "agent_rank": "junior"
+}
+a = AgentDB()
+a.create_agents(my_data)

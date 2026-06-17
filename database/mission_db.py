@@ -20,24 +20,30 @@ class MissionDB:
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = ""
+        sql_command1 = "SELECT * FROM missions"
         cur.execute(sql_command1)
-        conn.commit()
+
+        result = cur.fetchall()
 
         cur.close()
         conn.close()
+
+        return result
 
     def get_mission_by_id(self, id: int):
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = ""
-        cur.execute(sql_command1)
+        sql_command1 = "SELECT * FROM agents WHERE id = %s"
+        cur.execute(sql_command1, (id,))
         conn.commit()
+
+        result = cur.fetchone()
 
         cur.close()
         conn.close()
 
+        return result
 
     def assign_mission(self, m_id: int, a_id: int):
         conn = my_conn_etablished

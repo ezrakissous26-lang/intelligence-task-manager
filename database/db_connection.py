@@ -24,11 +24,13 @@ class DB_connection:
         cur.close()
         conn.close()
 
+        print("Database created successfully.")
+
     def create_tables(self):
         conn = self.get_connection()
         cur = conn.cursor()
 
-        sql_command1 = """CREATE TABLE `agents`(
+        sql_command1 = """CREATE TABLE IF NOT EXISTS `agents`(
         `id` int NOT NULL AUTO_INCREMENT,
         `name` varchar(255) DEFAULT NULL,
         `speciality` varchar(255) DEFAULT NULL,
@@ -43,7 +45,7 @@ class DB_connection:
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci"""
 
-        sql_command2 = """CREATE TABLE `missions` (
+        sql_command2 = """CREATE TABLE IF NOT EXISTS `missions` (
         `id` int NOT NULL AUTO_INCREMENT,
         `title` varchar(255) DEFAULT NULL,
         `description` text,
@@ -61,6 +63,8 @@ class DB_connection:
 
         cur.close()
         conn.close()
+
+        print("Tables created successfully or exists.")
 
 
 a = DB_connection()
