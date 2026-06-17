@@ -36,7 +36,6 @@ agent_rank | VARCHAR ENUM | only Junior / Senior / Commander
 
 |`Field` | `Type` | `Comments`|
 |----|----| ----|
-
 id | INT, AUTO INCREMENT, PRIMARY KEY | UNIQUE
 title | VARCHAR | title of mission
 description | TEXT | detailling description
