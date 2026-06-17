@@ -9,12 +9,19 @@ class MissionDB:
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = ""
-        cur.execute(sql_command1)
+        sql_command = """INSERT INTO missions (title, description, location, difficulty, importance, status, risk_level, assigned_agent_id)
+        VALUES (%s, %s, %s, %s, %s, %s)"""
+        values = list(data.values())
+
+        cur.execute(sql_command, values)
         conn.commit()
+
+        result = cur.lastrowid
 
         cur.close()
         conn.close()
+
+        return result
 
     def get_all_missions(self):
         conn = my_conn_etablished

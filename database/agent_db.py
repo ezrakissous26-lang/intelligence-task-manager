@@ -9,9 +9,9 @@ class AgentDB:
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command = """INSERT INTO agents ('name', 'speciality', 'is_active', 'completed_missions', 'failed_missions', 'agent_rank')
+        sql_command = """INSERT INTO agents (`name`, speciality, is_active, completed_missions, failed_missions, agent_rank)
         VALUES (%s, %s, %s, %s, %s, %s)"""
-        values = data.values()
+        values = list(data.values())
 
         cur.execute(sql_command, values)
         conn.commit()
@@ -126,10 +126,11 @@ class AgentDB:
 
         cur.execute(sql_command1, values)'''
 
+
 my_data = {
     "name": "Ezra",
     "speciality": "dev",
-    "is_active": True,
+    "is_active": 1,
     "completed_missions": 5,
     "failed_missions": 2,
     "agent_rank": "junior"
