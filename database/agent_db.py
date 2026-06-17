@@ -55,12 +55,21 @@ class AgentDB:
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = ""
-        cur.execute(sql_command1)
+        set_parts = [f"{key} = %s" for key in data.keys()]
+        set_clause = ", ".join(set_parts)
+
+        sql_command1 = f"UPDATE agents SET {set_clause} WHERE id = %s"
+        values = list(data.values()) + [id]
+
+        cur.execute(sql_command1, values)
         conn.commit()
+
+        check = cur.rowcount > 0
 
         cur.close()
         conn.close()
+
+        return check
 
     def deactivate_agent(self, id: int):
         conn = my_conn_etablished
@@ -121,7 +130,7 @@ class AgentDB:
         '''set_parts = [f"{key} = %s" for key in data.keys()]
         set_clause = ", ".join(set_parts)
 
-        sql_command1 = f"UPDATE books SET {set_clause} WHERE id = %s"
+        sql_command1 = f"UPDATE agents SET {set_clause} WHERE id = %s"
         values = list(data.values()) + [id]
 
         cur.execute(sql_command1, values)'''
