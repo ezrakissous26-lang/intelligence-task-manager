@@ -1,18 +1,18 @@
 from database.db_connection import DB_connection
 
-my_conn = DB_connection()
-my_conn_etablished = my_conn.get_connection()
-
 
 class AgentDB:
 
     valid_ranks = ["Junior", "Senior", "Commander"]
 
+    def connecting(self):
+        return DB_connection().get_connection()
+
     def create_agents(self, data: dict):
 
         if data["agent_rank"] not in self.valid_ranks:
             raise ValueError(f"Error ! Accepted values only : {self.valid_ranks}")
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command = """INSERT INTO agents (`name`, speciality, is_active, completed_missions, failed_missions, agent_rank)
@@ -30,7 +30,7 @@ class AgentDB:
         return self.get_agent_by_id(last_id)
 
     def get_all_agents(self):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor(dictionary=True)
 
         sql_command1 = "SELECT * FROM agents"
@@ -44,7 +44,7 @@ class AgentDB:
         return result
 
     def get_agent_by_id(self, id: int):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = "SELECT * FROM agents WHERE id = %s"
@@ -60,7 +60,7 @@ class AgentDB:
     def update_agent(self, id: int, data: dict):
         if 'agent_rank' in data and data['agent_rank'] not in self.valid_ranks:
             raise ValueError(f"Error ! Accepted values only : {self.valid_ranks}")
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         set_parts = [f"{key} = %s" for key in data.keys()]
@@ -80,7 +80,7 @@ class AgentDB:
         return check
 
     def deactivate_agent(self, id: int):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = "UPDATE agents SET is_active = FALSE WHERE id = %s"
@@ -95,7 +95,7 @@ class AgentDB:
         return check
 
     def increment_completed(self, id: int):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = """UPDATE agents SET completed_missions = completed_missions + 1 WHERE id = %s"""
@@ -110,7 +110,7 @@ class AgentDB:
         return check
 
     def increment_failed(self, id: int):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = """UPDATE agents SET failed_missions = failed_missions + 1 WHERE id = %s"""
@@ -125,7 +125,7 @@ class AgentDB:
         return check
 
     def get_agent_performance(self, id: int):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor(dictionary=True)
 
         sql_command1 = "SELECT completed_missions, failed_missions FROM agents WHERE id = %s"
@@ -139,7 +139,7 @@ class AgentDB:
 
         if row is None:
             return None
-        
+
         completed = row["completed_missions"]
         failed = row["failed_missions"]
         total = completed + failed
@@ -154,7 +154,7 @@ class AgentDB:
         }
 
     def count_active_agents(self):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = "SELECT COUNT(*) FROM agents WHERE is_active = TRUE"
@@ -167,15 +167,3 @@ class AgentDB:
         conn.close()
 
         return result
-
-# supprimer ca avnt de push a la fin
-my_data = {
-    "name": "Ezra",
-    "speciality": "dev",
-    "is_active": 1,
-    "completed_missions": 5,
-    "failed_missions": 2,
-    "agent_rank": "junior"
-}
-a = AgentDB()
-a.create_agents(my_data)

@@ -1,13 +1,13 @@
 from database.db_connection import DB_connection
 from database.agent_db import AgentDB
 
-my_conn = DB_connection()
-my_conn_etablished = my_conn.get_connection()
-
 
 class MissionDB:
 
     valid_status = ["NEW", "ASSIGNED", "IN_PROGRESS", "COMPLETED", "FAILED", "CANCELLED"]
+
+    def connecting(self):
+        return DB_connection().get_connection()
 
     def set_risk_level(self, difficulty: int, importance: int):
         risk_level = difficulty * 2 + importance
@@ -29,7 +29,7 @@ class MissionDB:
 
         risk_level = self.set_risk_level(diff, imp)
 
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command = """INSERT INTO missions (title, description, location, difficulty, importance, status, risk_level, assigned_agent_id)
@@ -56,7 +56,7 @@ class MissionDB:
         return self.get_mission_by_id(result)
 
     def get_all_missions(self):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor(dictionary=True)
 
         sql_command1 = "SELECT * FROM missions"
@@ -70,7 +70,7 @@ class MissionDB:
         return result
 
     def get_mission_by_id(self, id: int):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor(dictionary=True)
 
         sql_command1 = "SELECT * FROM missions WHERE id = %s"
@@ -103,7 +103,7 @@ class MissionDB:
         if len(mission_open) >= 3:
             raise ValueError("Agent can't have more than 3 missions.")
 
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = "UPDATE missions SET assigned_agent_id = %s, status = 'ASSIGNED' WHERE id = %s"
@@ -132,7 +132,7 @@ class MissionDB:
         if status == "CANCELED" and actual_status not in ["NEW", "ASSIGNED"]:
             raise ValueError("You can cancel mission only if she in status NEW or ASSIGNED")
 
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = "UPDATE missions SET status = %s WHERE id = %s"
@@ -149,7 +149,7 @@ class MissionDB:
         return check
 
     def get_open_missions_by_agent(self, id: int):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor(dictionary=True)
 
         sql_command1 = "SELECT * FROM missions WHERE assigned_agent_id = %s AND status IN ('ASSIGNED', 'IN_PROGRESS')"
@@ -163,7 +163,7 @@ class MissionDB:
         return result
 
     def count_all_missions(self):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = "SELECT COUNT(*) FROM missions"
@@ -177,7 +177,7 @@ class MissionDB:
         return result[0]
 
     def count_by_status(self, status):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = "SELECT COUNT(*) FROM missions WHERE status = %s"
@@ -191,7 +191,7 @@ class MissionDB:
         return result[0]
 
     def count_open_missions(self):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = "SELECT COUNT(*) FROM missions WHERE status IN ('NEW', 'ASSIGNED', 'IN_PROGRESS')"
@@ -205,7 +205,7 @@ class MissionDB:
         return result[0]
 
     def count_critical_missions(self):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor()
 
         sql_command1 = "SELECT COUNT(*) FROM missions WHERE risk_level = 'CRITICAL'"
@@ -219,7 +219,7 @@ class MissionDB:
         return result[0]
 
     def get_top_agent(self):
-        conn = my_conn_etablished
+        conn = self.connecting()
         cur = conn.cursor(dictionary=True)
 
         sql_command1 = "SELECT * FROM agents ORDER BY completed_missions DESC LIMIT 1"
