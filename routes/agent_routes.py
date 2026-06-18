@@ -22,7 +22,7 @@ def r_create_agents(data: dict = Body(...)):
         return result
     except Exception as e:
         logger.error(f"Error while creating agent: {e}")
-        raise HTTPException(status_code=400, detail=e)  # str de e ? pk 
+        raise HTTPException(status_code=400, detail=f"{e}")
 
 
 
@@ -36,7 +36,7 @@ def r_get_agents():
         return result
     except Exception as e:
         logger.error(f"Error while displaying agents: {e}")
-        raise HTTPException(status_code=400, detail=e)
+        raise HTTPException(status_code=400, detail=f"{e}")
 
 
 
@@ -62,7 +62,7 @@ def r_update_agent(id: int, data: dict = Body(...)):
         return {"message": result}
     except Exception as e:
         logger.error(f"Error while updating agent: {e}")
-        raise HTTPException(status_code=404, detail=e)
+        raise HTTPException(status_code=404, detail=f"{e}")
 
 
 @agent_router.put('/agents/{id}/deactivate')
