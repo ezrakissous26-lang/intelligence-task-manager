@@ -1,4 +1,4 @@
-from db_connection import DB_connection
+from database.db_connection import DB_connection
 
 my_conn = DB_connection()
 my_conn_etablished = my_conn.get_connection()
@@ -113,7 +113,7 @@ class AgentDB:
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = """UPDATE agents SET failed_missions = failed_missions - 1 WHERE id = %s"""
+        sql_command1 = """UPDATE agents SET failed_missions = failed_missions + 1 WHERE id = %s"""
         cur.execute(sql_command1, (id,))
         conn.commit()
 

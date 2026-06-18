@@ -1,5 +1,5 @@
-from db_connection import DB_connection
-from agent_db import AgentDB
+from database.db_connection import DB_connection
+from database.agent_db import AgentDB
 
 my_conn = DB_connection()
 my_conn_etablished = my_conn.get_connection()
@@ -73,7 +73,7 @@ class MissionDB:
         conn = my_conn_etablished
         cur = conn.cursor(dictionary=True)
 
-        sql_command1 = "SELECT * FROM agents WHERE id = %s"
+        sql_command1 = "SELECT * FROM missions WHERE id = %s"
         cur.execute(sql_command1, (id,))
         conn.commit()
 
@@ -88,6 +88,7 @@ class MissionDB:
 
         my_mission = self.get_mission_by_id(m_id)
         my_agent = AgentDB().get_agent_by_id(a_id)
+        mission_open = self.get_open_missions_by_agent(a_id)
 
         if my_mission is None:
             raise ValueError("Mission not found.")  # maybe return false is better ?
@@ -97,8 +98,10 @@ class MissionDB:
             raise ValueError("This agent is not active, sorry.")
         if my_mission["status"] != "NEW":
             raise ValueError("The mission need be in status NEW for assign to agent.")
-        if my_mission['risk_level'] == "CRITICAL" and my_agent["agent_ranks"] != "Commander":
+        if my_mission['risk_level'] == "CRITICAL" and my_agent["agent_rank"] != "Commander":
             raise ValueError("Only Commander can take mission CRITICAL")
+        if len(mission_open) >= 3:
+            raise ValueError("Agent can't have more than 3 missions.")
 
         conn = my_conn_etablished
         cur = conn.cursor()
@@ -149,7 +152,7 @@ class MissionDB:
         conn = my_conn_etablished
         cur = conn.cursor(dictionary=True)
 
-        sql_command1 = "SELECT COUNT(*) FROM missions WHERE assigned_agent_id = %s AND status IN ('ASSIGNED', 'IN_PROGRESS')"
+        sql_command1 = "SELECT * FROM missions WHERE assigned_agent_id = %s AND status IN ('ASSIGNED', 'IN_PROGRESS')"
         cur.execute(sql_command1, (id,))
 
         result = cur.fetchall()
@@ -191,7 +194,7 @@ class MissionDB:
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = "SELECT COUNT(*) FROM missions WHERE status IN ('NEW', 'ASSIGNED', 'IN_PROCESS')"
+        sql_command1 = "SELECT COUNT(*) FROM missions WHERE status IN ('NEW', 'ASSIGNED', 'IN_PROGRESS')"
         cur.execute(sql_command1)
 
         result = cur.fetchone()
@@ -205,7 +208,7 @@ class MissionDB:
         conn = my_conn_etablished
         cur = conn.cursor()
 
-        sql_command1 = "SELECT COUNT(*) FROM missions WHERE risk_level = 'CRITICAL"
+        sql_command1 = "SELECT COUNT(*) FROM missions WHERE risk_level = 'CRITICAL'"
         cur.execute(sql_command1)
 
         result = cur.fetchone()
