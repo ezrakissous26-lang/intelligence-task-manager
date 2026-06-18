@@ -122,6 +122,12 @@ class MissionDB:
             raise ValueError(f"Error ! Invalid status. Use only this {self.valid_status}")
         if my_mission is None:
             raise ValueError("Mission not found.")
+        if status == "IN_PROGRESS" and actual_status != "ASSIGNED":
+            raise ValueError("The mission need be ASSIGNED before be IN_PROGRESS")
+        if status in ["COMPLETED", "FAILED"] and actual_status != "IN_PROGRESS":
+            raise ValueError("Before be finish the mission need be IN_PROGRESS")
+        if status == "CANCELED" and actual_status not in ["NEW", "ASSIGNED"]:
+            raise ValueError("You can cancel mission only if she in status NEW or ASSIGNED")
 
         conn = my_conn_etablished
         cur = conn.cursor()
