@@ -14,7 +14,12 @@ class DB_connection:
         return conn
 
     def create_database(self):
-        conn = self.get_connection()
+        conn = mysql.connector.connect(
+            host="localhost",
+            port="3306",
+            user="root",
+            password="1234"
+        )
         cur = conn.cursor()
 
         sql_command = "CREATE DATABASE IF NOT EXISTS Intelligence_db;"
@@ -24,7 +29,7 @@ class DB_connection:
         cur.close()
         conn.close()
 
-        print("Database created successfully.")
+        print("Database created successfully or exists.")
 
     def create_tables(self):
         conn = self.get_connection()
@@ -38,9 +43,9 @@ class DB_connection:
         `completed_missions` int DEFAULT '0',
         `failed_missions` int DEFAULT '0',
         `agent_rank` enum(
-            'junior',
-            'senior',
-            'commander'
+            'Junior',
+            'Senior',
+            'Commander'
         ) DEFAULT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci"""
@@ -52,7 +57,7 @@ class DB_connection:
         `location` varchar(255) DEFAULT NULL,
         `difficulty` int DEFAULT NULL,
         `importance` int DEFAULT NULL,
-        `status` varchar(255) DEFAULT 'new',
+        `status` varchar(255) DEFAULT 'NEW',
         `risk_level` varchar(255) DEFAULT NULL,
         `assigned_agent_id` int DEFAULT NULL,
         PRIMARY KEY (`id`)
@@ -67,7 +72,6 @@ class DB_connection:
         print("Tables created successfully or exists.")
 
 
-a = DB_connection()
-a.get_connection()
-a.create_database()
-a.create_tables()
+db = DB_connection()
+db.create_database()
+db.create_tables()
